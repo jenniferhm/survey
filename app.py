@@ -1,13 +1,13 @@
-from flask import Flask, render_template, request, redirect
-# from flask_debugtoolbar import DebugToolbarExtension
+from flask import Flask, render_template, request, redirect, flash
+from flask_debugtoolbar import DebugToolbarExtension
 from surveys import satisfaction_survey
 
 
 app = Flask(__name__)
-# app.config["SECRET_KEY"] = "survey"
-# app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+app.config["SECRET_KEY"] = "survey"
+app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 
-# debug = DebugToolbarExtension(app)
+debug = DebugToolbarExtension(app)
 
 responses = []
 question_number = 0
@@ -15,6 +15,7 @@ question_number = 0
 @app.route("/")
 def survey():
     """Showing survey form."""
+    responses = []
     return render_template("survey.html", title=satisfaction_survey.title,
         instructions=satisfaction_survey.instructions)
 
@@ -23,8 +24,13 @@ def survey():
 def question(quest):
     """Showing one question from survey."""
     # if(quest == len(satisfaction_survey.questions)):
-    
-    return render_template("question.html", question=satisfaction_survey.questions[quest].question, choices=satisfaction_survey.questions[quest].choices, quest=quest)
+
+    """Check if on the right question"""
+    if len(responses) != quest:
+        flash("Please answer")
+        return redirect(f"/questions/{len(responses)}")
+    else:
+        return render_template("question.html", question=satisfaction_survey.questions[quest].question, choices=satisfaction_survey.questions[quest].choices, quest=quest)
 
 
 @app.route("/answers", methods=["POST"])
@@ -33,7 +39,9 @@ def answers():
     
     responses.append(request.form["choice_made"])
     quest = int(request.form["question_number"])
+    
 
+    """Check if limit of questions has been reached"""
     if quest == len(satisfaction_survey.questions) - 1:
         return redirect('/thankyou')
     else:
