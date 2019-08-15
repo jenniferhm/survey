@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}SURVEY{% endblock%}
+
+{% block content %}
+  {{ title }}
+  {{ question }}
+  <form action="/answers" name="test2" method="POST">
+  {% for choice in choices %}
+    <input type="radio" name="choice_made" value="{{choice}}"> {{ choice }}
+  {% endfor %}
+  <button type="submit"> QUESTION</button>
+  </form>
+{% endblock%}
