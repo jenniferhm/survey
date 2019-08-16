@@ -5,5 +5,7 @@
 {% block content %}
   {{ title }}
   {{ instructions }}
-  <a href="/questions/0"><button>BUTTON</button></a>
+  <form action="/setup" method="POST">
+    <button type="submit">BUTTON</button>
+  </form>
 {% endblock%}
